@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create *)",
+      "PowerShell(cd \"C:\\\\Users\\\\ihope\\\\OneDrive\\\\デスクトップ\\\\ramen-app\"; npm create vite@latest . -- --template react-ts 2>&1)",
+      "PowerShell(Get-Command node -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command npm -ErrorAction SilentlyContinue)",
+      "PowerShell($env:PATH)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\nodejs\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:APPDATA\\\\npm\" -ErrorAction SilentlyContinue; Get-ChildItem \"C:\\\\Users\\\\ihope\\\\AppData\\\\Roaming\\\\nvm\" -ErrorAction SilentlyContinue)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}
