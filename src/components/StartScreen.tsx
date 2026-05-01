@@ -14,7 +14,7 @@ export default function StartScreen({ onStart }: Props) {
         <img
           src="/images/ramen-start.png"
           alt="ラーメン"
-          className="w-full max-w-xs mb-5 mt-2 mx-auto"
+          className="w-40 mb-3 mt-2"
         />
 
         {/* Title */}
@@ -25,26 +25,21 @@ export default function StartScreen({ onStart }: Props) {
           ラーメン診断
         </p>
 
-        {/* Catchcopy chips */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {['30秒で今の気分を言語化', '失敗しないお店選び', 'Googleマップと連動'].map((tag) => (
-            <span
-              key={tag}
-              className="text-xs font-semibold text-ramen-brown bg-orange-100 border border-orange-200 rounded-full px-3 py-1"
-            >
-              ✓ {tag}
-            </span>
-          ))}
-        </div>
-
         {/* Hero story text */}
-        <div className="bg-white rounded-3xl border border-stone-100 shadow-sm px-5 py-4 mb-8 text-left max-w-sm">
+        <div className="bg-white rounded-3xl border border-stone-100 shadow-sm px-5 py-4 mb-3 text-left max-w-sm">
           <p className="text-stone-600 text-sm leading-relaxed">
             ラーメンが食べたい気分だけど、「近くのラーメン屋」で検索して適当に入り、お店選びに失敗する…そんな経験はありませんか？
           </p>
           <p className="text-ramen-brown font-semibold text-sm mt-2 leading-relaxed">
             今のあなたが本当に求めている一杯を、数問の質問からサクッと診断！
           </p>
+        </div>
+
+        {/* Map chip */}
+        <div className="mb-8">
+          <span className="text-xs font-semibold text-ramen-brown bg-orange-100 border border-orange-200 rounded-full px-3 py-1.5">
+            ✓ 診断結果をGoogleMapでそのまま検索
+          </span>
         </div>
 
         {/* CTA */}
