@@ -7,14 +7,14 @@ interface Props {
 
 export default function StartScreen({ onStart }: Props) {
   return (
-    <div className="flex flex-col min-h-screen px-6 py-10">
+    <div className="flex flex-col min-h-screen px-6 py-6">
       {/* Hero */}
       <div className="flex-1 flex flex-col items-center text-center">
         {/* メインビジュアル */}
         <img
           src="/images/ramen-start.png"
           alt="ラーメン"
-          className="w-40 mb-3 mt-2"
+          className="w-40 mb-2 mt-1"
         />
 
         {/* Title */}
@@ -26,7 +26,7 @@ export default function StartScreen({ onStart }: Props) {
         </p>
 
         {/* Hero story text */}
-        <div className="bg-white rounded-3xl border border-stone-100 shadow-sm px-5 py-4 mb-3 text-left max-w-sm">
+        <div className="bg-white rounded-3xl border border-stone-100 shadow-sm px-5 py-4 mb-3 text-left max-w-sm w-full">
           <p className="text-stone-600 text-sm leading-relaxed">
             ラーメンが食べたい気分だけど、「近くのラーメン屋」で検索して適当に入り、お店選びに失敗する…そんな経験はありませんか？
           </p>
@@ -36,7 +36,7 @@ export default function StartScreen({ onStart }: Props) {
         </div>
 
         {/* Map chip */}
-        <div className="mb-8">
+        <div className="mb-5">
           <span className="text-xs font-semibold text-ramen-brown bg-orange-100 border border-orange-200 rounded-full px-3 py-1.5">
             ✓ 診断結果をGoogleMapでそのまま検索
           </span>
