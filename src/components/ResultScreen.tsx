@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Genre } from '../types'
 import AdBlock from './AdBlock'
 import Footer from './Footer'
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function ResultScreen({ genre, dislikes, redirectNote, onRestart }: Props) {
+  useEffect(() => { window.scrollTo(0, 0) }, [])
   // -貝 をマップ検索ワードに付与
   const mapKeyword = dislikes.includes('貝')
     ? `${genre.mapKeyword} -貝`
