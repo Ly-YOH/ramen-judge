@@ -1,3 +1,6 @@
+import AdBlock from './AdBlock'
+import Footer from './Footer'
+
 interface Props {
   onStart: () => void
 }
@@ -7,10 +10,12 @@ export default function StartScreen({ onStart }: Props) {
     <div className="flex flex-col min-h-screen px-6 py-10">
       {/* Hero */}
       <div className="flex-1 flex flex-col items-center text-center">
-        {/* Bowl illustration */}
-        <div className="text-8xl mt-4 mb-5 drop-shadow-lg select-none" role="img" aria-label="ラーメン">
-          🍜
-        </div>
+        {/* メインビジュアル */}
+        <img
+          src="/images/ramen-start.png"
+          alt="ラーメン"
+          className="w-full max-w-xs mb-5 mt-2 mx-auto"
+        />
 
         {/* Title */}
         <h1 className="text-5xl font-black text-ramen-dark mb-1 tracking-tight leading-tight">
@@ -51,16 +56,13 @@ export default function StartScreen({ onStart }: Props) {
         </div>
       </div>
 
-      {/* Ad placeholder */}
-      <div className="mt-10 pb-2">
-        {/* AdSense ここに挿入 */}
-        <div
-          className="w-full min-h-[100px] bg-stone-100 border-2 border-dashed border-stone-300 rounded-2xl flex items-center justify-center"
-          aria-hidden="true"
-        >
-          <p className="text-stone-400 text-sm font-medium">広告スペース</p>
-        </div>
+      {/* 広告 */}
+      <div className="mt-10">
+        <AdBlock />
       </div>
+
+      {/* フッター */}
+      <Footer />
     </div>
   )
 }

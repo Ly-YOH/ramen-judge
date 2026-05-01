@@ -1,4 +1,6 @@
 import { Genre } from '../types'
+import AdBlock from './AdBlock'
+import Footer from './Footer'
 
 interface Props {
   genre: Genre
@@ -26,20 +28,24 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
           診断結果
         </p>
 
-        {/* Bowl icon */}
-        <div className="text-center text-7xl mb-4 drop-shadow select-none" role="img" aria-label="ラーメン">
-          🍜
+        {/* Genre name + 結果画像 */}
+        <div className="flex items-end justify-start mb-6 gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-3xl font-black text-ramen-dark mb-1 leading-tight">
+              {genre.name}
+            </h2>
+            <p className="text-ramen-orange font-semibold text-base">
+              があなたにぴったり！
+            </p>
+          </div>
+          <img
+            src="/images/ramen-result.png"
+            alt="ラーメン"
+            className="w-28 flex-shrink-0"
+          />
         </div>
 
-        {/* Genre name */}
-        <h2 className="text-center text-3xl font-black text-ramen-dark mb-1 leading-tight">
-          {genre.name}
-        </h2>
-        <p className="text-center text-ramen-orange font-semibold text-base mb-6">
-          があなたにぴったり！
-        </p>
-
-        {/* Redirect notice: 苦手選択によるジャンル変更の説明 */}
+        {/* Redirect notice */}
         {redirectNote && (
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-4 flex gap-3">
             <span className="text-xl flex-shrink-0">🔄</span>
@@ -52,8 +58,6 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
           <p className="text-stone-700 text-base leading-relaxed">
             {genre.description}
           </p>
-
-          {/* Follow-up note (e.g. for 油そば) */}
           {genre.followUpNote && (
             <p className="mt-3 pt-3 border-t border-stone-100 text-stone-500 text-sm leading-relaxed italic">
               {genre.followUpNote}
@@ -61,7 +65,7 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
           )}
         </div>
 
-        {/* Flavor note: 味の特徴＋味変ヒント */}
+        {/* Flavor note */}
         <div className="bg-orange-50 border border-orange-100 rounded-2xl px-4 py-3 mb-4 flex items-start gap-2.5">
           <span className="text-lg flex-shrink-0 mt-0.5">💡</span>
           <div>
@@ -110,16 +114,13 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
         </button>
       </div>
 
-      {/* Ad placeholder */}
+      {/* 広告 */}
       <div className="mt-10">
-        {/* AdSense ここに挿入 */}
-        <div
-          className="w-full min-h-[100px] bg-stone-100 border-2 border-dashed border-stone-300 rounded-2xl flex items-center justify-center"
-          aria-hidden="true"
-        >
-          <p className="text-stone-400 text-sm font-medium">広告スペース</p>
-        </div>
+        <AdBlock />
       </div>
+
+      {/* フッター */}
+      <Footer />
     </div>
   )
 }

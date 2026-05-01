@@ -112,6 +112,10 @@ function applyDislikeOverrides(id: string, dislikes: string[]): string {
   const isSpicy = dislikes.includes('辛いもの')
   const isAnimalSmell = dislikes.includes('獣臭')
   const isBackFat = dislikes.includes('背脂')
+  const isNiboshi = dislikes.includes('煮干し')
+
+  // 煮干し苦手 → 煮干し系を淡麗系へ（同じあっさり魚介圏で煮干し不使用）
+  if (isNiboshi && id === 'niboshi') id = 'tanrei'
 
   if (isSpicy) {
     if (id === 'tantanmen') id = 'tsukemen'
@@ -164,7 +168,12 @@ function buildRedirectNote(
     return `汁ありご希望のため、${name(original)}の代わりに「${name(final)}」をご提案します。`
   }
 
-  // ④ 辛いもの嫌いによるリダイレクト（soup関係なし）
+  // ④ 煮干し苦手によるリダイレクト
+  if (dislikes.includes('煮干し') && original === 'niboshi') {
+    return `煮干しが苦手とのことで、煮干し系の代わりに「${name(final)}」をご提案します。`
+  }
+
+  // ⑤ 辛いもの嫌いによるリダイレクト（soup関係なし）
   if (dislikes.includes('辛いもの')) {
     if (original === 'taiwan-maze' || afterSoup === 'taiwan-maze')
       return `辛いものが苦手とのことで、台湾まぜそばの代わりに「${name(final)}」をご提案します。醤油・塩ベースのまぜそばもあわせてお探しください。`
@@ -172,7 +181,7 @@ function buildRedirectNote(
       return `辛いものが苦手とのことで、担々麺の代わりに「${name(final)}」をご提案します。`
   }
 
-  // ⑤ 獣臭・背脂によるリダイレクト
+  // ⑥ 獣臭・背脂によるリダイレクト
   if (dislikes.includes('獣臭')) {
     const odorSources = ['hakata', 'ie-jiro', 'tonkotsu-shoyu', 'fish-tonkotsu']
     if (odorSources.includes(original))
