@@ -1,1 +1,1 @@
-{"buildCommand":"npm run build","framework":"vite"}
+{"buildCommand":"next build","framework":"nextjs"}
