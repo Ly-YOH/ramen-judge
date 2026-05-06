@@ -19,8 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         {/* admax */}
-        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <script src="https://adm.shinobi.jp/s/45f785f2c648050ded30ac3f29866b46" async />
+        <div dangerouslySetInnerHTML={{ __html: '<script src="https://adm.shinobi.jp/s/45f785f2c648050ded30ac3f29866b46" async></script>' }} />
         {/* admax */}
       </body>
     </html>
