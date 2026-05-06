@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useMemo } from 'react'
 import { Screen, Answers, Genre } from './types'
 import { questions } from './data/questions'
