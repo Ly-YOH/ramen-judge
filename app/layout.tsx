@@ -18,9 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja">
       <body>
         {children}
-        {/* admax */}
-        <div dangerouslySetInnerHTML={{ __html: '<script src="https://adm.shinobi.jp/s/45f785f2c648050ded30ac3f29866b46" async></script>' }} />
-        {/* admax */}
+        <div dangerouslySetInnerHTML={{ __html: '<!-- admax --><script src="https://adm.shinobi.jp/s/45f785f2c648050ded30ac3f29866b46"></script><!-- admax -->' }} />
       </body>
     </html>
   )
