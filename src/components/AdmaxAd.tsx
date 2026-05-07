@@ -1,37 +1,40 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 const ADMAX_ID = '45f785f2c648050ded30ac3f29866b46'
 
 export const AdmaxAd = () => {
+  const ref = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
-    // 既存のt.jsを削除してキャッシュを回避（再実行させる）
-    document.querySelectorAll('script[data-admax]').forEach(s => s.remove())
+    if (!ref.current) return
 
-    // キューをリセットして再登録
-    ;(window as any).admaxads = []
-    ;(window as any).admaxads.push({ admax_id: ADMAX_ID, type: 'banner' })
+    // 静的埋め込みコードと全く同じ構造を useEffect 内で再現する
+    // 順序: initScript → adDiv → loadScript（AdMaxのHTML埋め込みと同一順序）
 
-    // t.jsを毎回新しいタグとして追加（キャッシュバスト付き）
-    const script = document.createElement('script')
-    script.setAttribute('data-admax', '1')
-    script.src = `https://adm.shinobi.jp/st/t.js?_=${Date.now()}`
-    script.async = true
-    script.charset = 'utf-8'
-    document.body.appendChild(script)
+    // 1. admaxads キュー初期化スクリプト（同期実行）
+    const initScript = document.createElement('script')
+    initScript.text = `var admaxads = window.admaxads || []; admaxads.push({admax_id: "${ADMAX_ID}", type: "banner"});`
+    ref.current.appendChild(initScript)
+
+    // 2. 広告表示先 div
+    const adDiv = document.createElement('div')
+    adDiv.className = 'admax-ads'
+    adDiv.setAttribute('data-admax-id', ADMAX_ID)
+    adDiv.style.display = 'inline-block'
+    ref.current.appendChild(adDiv)
+
+    // 3. t.js 読み込みスクリプト（adDiv の直後に配置）
+    const loadScript = document.createElement('script')
+    loadScript.async = true
+    loadScript.charset = 'utf-8'
+    loadScript.src = 'https://adm.shinobi.jp/st/t.js'
+    ref.current.appendChild(loadScript)
 
     return () => {
-      script.remove()
+      ref.current?.replaceChildren()
     }
   }, [])
 
-  return (
-    <div style={{ width: '100%', textAlign: 'center', minHeight: '50px' }}>
-      <div
-        className="admax-ads"
-        data-admax-id={ADMAX_ID}
-        style={{ display: 'inline-block' }}
-      />
-    </div>
-  )
+  return <div ref={ref} style={{ width: '100%', textAlign: 'center' }} />
 }
