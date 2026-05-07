@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -18,9 +17,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <body>
-        <Script
-          src="https://adm.shinobi.jp/s/45f785f2c648050ded30ac3f29866b46"
-          strategy="afterInteractive"
+        <div
+          dangerouslySetInnerHTML={{
+            __html: '<script src="https://adm.shinobi.jp/s/45f785f2c648050ded30ac3f29866b46"></script>'
+          }}
         />
         {children}
       </body>
