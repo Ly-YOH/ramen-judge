@@ -16,14 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
-      <body>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: '<script src="https://adm.shinobi.jp/s/45f785f2c648050ded30ac3f29866b46"></script>'
-          }}
-        />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

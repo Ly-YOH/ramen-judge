@@ -1,4 +1,4 @@
-import AdBlock from './AdBlock'
+import { AdmaxAd } from './AdmaxAd'
 import Footer from './Footer'
 
 interface Props {
@@ -53,7 +53,7 @@ export default function StartScreen({ onStart }: Props) {
 
       {/* 広告 */}
       <div className="mt-10">
-        <AdBlock />
+        <AdmaxAd />
       </div>
 
       {/* フッター */}
