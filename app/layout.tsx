@@ -16,7 +16,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="https://adm.shinobi.jp/s/45f785f2c648050ded30ac3f29866b46" />
+      </body>
     </html>
   )
 }
