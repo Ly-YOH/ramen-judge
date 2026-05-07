@@ -9,26 +9,26 @@ export const AdmaxAd = () => {
   useEffect(() => {
     if (!ref.current) return
 
-    // 静的埋め込みコードと全く同じ構造を useEffect 内で再現する
-    // 順序: initScript → adDiv → loadScript（AdMaxのHTML埋め込みと同一順序）
-
-    // 1. admaxads キュー初期化スクリプト（同期実行）
-    const initScript = document.createElement('script')
-    initScript.text = `var admaxads = window.admaxads || []; admaxads.push({admax_id: "${ADMAX_ID}", type: "banner"});`
-    ref.current.appendChild(initScript)
-
-    // 2. 広告表示先 div
+    // 公式非同期タグと同一の順序で DOM を構築
+    // 1. admax-ads div（最初）
     const adDiv = document.createElement('div')
     adDiv.className = 'admax-ads'
     adDiv.setAttribute('data-admax-id', ADMAX_ID)
     adDiv.style.display = 'inline-block'
     ref.current.appendChild(adDiv)
 
-    // 3. t.js 読み込みスクリプト（adDiv の直後に配置）
+    // 2. queue push（公式と同じ構文）
+    const initScript = document.createElement('script')
+    initScript.type = 'text/javascript'
+    initScript.text = `(admaxads = window.admaxads || []).push({admax_id: "${ADMAX_ID}", type: "banner"});`
+    ref.current.appendChild(initScript)
+
+    // 3. t.js async（最後）
     const loadScript = document.createElement('script')
-    loadScript.async = true
+    loadScript.type = 'text/javascript'
     loadScript.charset = 'utf-8'
     loadScript.src = 'https://adm.shinobi.jp/st/t.js'
+    loadScript.async = true
     ref.current.appendChild(loadScript)
 
     return () => {
