@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Genre } from '../types'
-import AdBlock from './AdBlock'
+import { AdmaxAd } from './AdmaxAd'
 import Footer from './Footer'
 
 interface Props {
@@ -118,7 +118,7 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
 
       {/* 広告 */}
       <div className="mt-10">
-        <AdBlock />
+        <AdmaxAd />
       </div>
 
       {/* フッター */}
