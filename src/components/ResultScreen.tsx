@@ -1,5 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Genre } from '../types'
+import { genres } from '../data/genres'
+import { alternatives } from '../data/alternatives'
 import { AdmaxAd } from './AdmaxAd'
 import Footer from './Footer'
 
@@ -10,12 +12,32 @@ interface Props {
   onRestart: () => void
 }
 
+type View = 'primary' | 'opposite' | 'secondary'
+
 const APP_URL = 'https://ramen-judge.vercel.app'
 
-export default function ResultScreen({ genre, dislikes, redirectNote, onRestart }: Props) {
-  useEffect(() => { window.scrollTo(0, 0) }, [])
+const VIEW_LABEL: Record<View, string> = {
+  primary:   '診断結果',
+  opposite:  '正反対の結果',
+  secondary: '2位の結果',
+}
 
-  // Googleマップ検索クエリ：mapsQuery > mapKeyword の優先順位
+export default function ResultScreen({ genre: primaryGenre, dislikes, redirectNote, onRestart }: Props) {
+  const [view, setView] = useState<View>('primary')
+  useEffect(() => { window.scrollTo(0, 0) }, [])
+  useEffect(() => { window.scrollTo(0, 0) }, [view])
+
+  // 表示するジャンルを view に応じて切り替え
+  const alt = alternatives[primaryGenre.id]
+  const oppositeGenre  = alt ? genres[alt.opposite]  ?? primaryGenre : primaryGenre
+  const secondaryGenre = alt ? genres[alt.secondary] ?? primaryGenre : primaryGenre
+
+  const genre =
+    view === 'opposite'  ? oppositeGenre  :
+    view === 'secondary' ? secondaryGenre :
+    primaryGenre
+
+  // Googleマップ検索クエリ
   const baseQuery = genre.mapsQuery ?? (
     genre.mapKeyword.includes('ラーメン') ? genre.mapKeyword : `${genre.mapKeyword}ラーメン`
   )
@@ -34,7 +56,7 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
       <div className="flex-1">
         {/* Top label */}
         <p className="text-center text-ramen-orange font-bold text-sm tracking-widest uppercase mb-3">
-          診断結果
+          {VIEW_LABEL[view]}
         </p>
 
         {/* Genre name + 結果画像 */}
@@ -44,7 +66,9 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
               {genre.name}
             </h2>
             <p className="text-ramen-orange font-semibold text-base">
-              があなたにぴったり！
+              {view === 'primary'   && 'があなたにぴったり！'}
+              {view === 'opposite'  && 'は正反対の一杯です'}
+              {view === 'secondary' && 'も合うかもしれません'}
             </p>
           </div>
           <img
@@ -54,12 +78,22 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
           />
         </div>
 
-        {/* Redirect notice */}
-        {redirectNote && (
+        {/* Redirect notice（診断結果のみ表示） */}
+        {view === 'primary' && redirectNote && (
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-4 flex gap-3">
             <span className="text-xl flex-shrink-0">🔄</span>
             <p className="text-blue-800 text-sm leading-relaxed">{redirectNote}</p>
           </div>
+        )}
+
+        {/* 元の結果に戻るバナー（alternative表示中のみ） */}
+        {view !== 'primary' && (
+          <button
+            onClick={() => setView('primary')}
+            className="w-full mb-4 py-2 px-4 rounded-2xl text-sm font-semibold text-ramen-orange bg-orange-50 border border-orange-200 active:scale-95 transition-transform duration-100"
+          >
+            ← 元の診断結果（{primaryGenre.name}）に戻る
+          </button>
         )}
 
         {/* Description card */}
@@ -121,7 +155,6 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
         <div className="mb-4">
           <p className="text-center text-xs text-stone-400 mb-2">結果をシェアする</p>
           <div className="flex gap-3">
-            {/* X (Twitter) */}
             <a
               href={twitterUrl}
               target="_blank"
@@ -133,7 +166,6 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
               </svg>
               X でシェア
             </a>
-            {/* LINE */}
             <a
               href={lineUrl}
               target="_blank"
@@ -147,11 +179,33 @@ export default function ResultScreen({ genre, dislikes, redirectNote, onRestart 
               LINE でシェア
             </a>
           </div>
-          {/* Instagram */}
           <p className="text-center text-xs text-stone-400 mt-2">
             📸 結果をスクショしてインスタのストーリーズでシェアしよう！
           </p>
         </div>
+
+        {/* Alternative view buttons */}
+        {alt && (
+          <div className="flex flex-col gap-2 mb-4">
+            <p className="text-center text-xs text-stone-400">他の結果を見る</p>
+            {view !== 'opposite' && (
+              <button
+                onClick={() => setView('opposite')}
+                className="w-full py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
+              >
+                🔄 正反対の結果を見る（{oppositeGenre.name}）
+              </button>
+            )}
+            {view !== 'secondary' && (
+              <button
+                onClick={() => setView('secondary')}
+                className="w-full py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
+              >
+                🥈 2位の結果を見る（{secondaryGenre.name}）
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Restart button */}
         <button onClick={onRestart} className="btn-secondary">
