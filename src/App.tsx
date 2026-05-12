@@ -13,6 +13,8 @@ export default function App() {
   const [answers, setAnswers] = useState<Answers>({})
   const [currentIndex, setCurrentIndex] = useState(0)
   const [result, setResult] = useState<Genre | null>(null)
+  const [secondGenre, setSecondGenre] = useState<Genre | null>(null)
+  const [oppositeGenre, setOppositeGenre] = useState<Genre | null>(null)
   const [redirectNote, setRedirectNote] = useState<string | null>(null)
   const [dislikes, setDislikes] = useState<string[]>([])
 
@@ -32,8 +34,10 @@ export default function App() {
   function handleNext() {
     const isLast = currentIndex === activeQuestions.length - 1
     if (isLast) {
-      const { genre, redirectNote: note } = diagnose(answers)
+      const { genre, secondGenre: second, oppositeGenre: opposite, redirectNote: note } = diagnose(answers)
       setResult(genre)
+      setSecondGenre(second)
+      setOppositeGenre(opposite)
       setRedirectNote(note)
       setDislikes(getDislikes(answers))
       setScreen('result')
@@ -56,6 +60,8 @@ export default function App() {
     setAnswers({})
     setCurrentIndex(0)
     setResult(null)
+    setSecondGenre(null)
+    setOppositeGenre(null)
     setRedirectNote(null)
     setDislikes([])
   }
@@ -77,9 +83,11 @@ export default function App() {
           />
         )}
 
-        {screen === 'result' && result && (
+        {screen === 'result' && result && secondGenre && oppositeGenre && (
           <ResultScreen
             genre={result}
+            secondGenre={secondGenre}
+            oppositeGenre={oppositeGenre}
             dislikes={dislikes}
             redirectNote={redirectNote}
             onRestart={handleRestart}

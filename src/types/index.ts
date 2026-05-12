@@ -20,6 +20,10 @@ export type Answers = Record<string, string | string[]>
 
 export interface DiagnoseResult {
   genre: Genre
+  /** スコア2位のジャンル */
+  secondGenre: Genre
+  /** スコア最下位（正反対）のジャンル */
+  oppositeGenre: Genre
   /** Shown when dislikes caused a genre redirect */
   redirectNote: string | null
 }
