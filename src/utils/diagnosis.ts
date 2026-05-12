@@ -1,218 +1,98 @@
 import { Answers, Genre, DiagnoseResult } from '../types'
 import { genres } from '../data/genres'
+import { scoreProfiles } from '../data/scores'
 
-// ジャンルの汁なし分類
-const NOODLE_ONLY = new Set(['abura-soba', 'taiwan-maze'])
-const TSUKEMEN = new Set(['tsukemen', 'tsukemen-light'])
-
-function resolveGenreId(answers: Answers): string {
-  const texture = answers['texture'] as string
-  const richness = answers['richness'] as string
-  const base = answers['base'] as string
-  const noodle = answers['noodle'] as string
-
-  // ── こってり + 動物系 ──────────────────────────────────────────────────────
-  if (texture === 'こってり' && base === '動物系') {
-    if (noodle === '太麺') {
-      return richness === 'ふつう' || richness === 'うすめ' ? 'miso' : 'ie-jiro'
-    }
-    if (noodle === '細麺') return 'hakata'
-    if (noodle === '中太麺') {
-      return richness === '濃いめ' ? 'tonkotsu-shoyu' : 'tori-paitan'
-    }
-    return 'ie-jiro'
-  }
-
-  // ── こってり + ダブルスープ ───────────────────────────────────────────────
-  if (texture === 'こってり' && base === 'ダブルスープ') {
-    if (noodle === '太麺') return 'taiwan-maze'
-    if (noodle === '中太麺') return 'tsukemen'
-    if (noodle === '細麺') return 'tantanmen'
-    return 'tsukemen'
-  }
-
-  // ── こってり + 魚介系 ──────────────────────────────────────────────────────
-  if (texture === 'こってり' && base === '魚介系') return 'fish-tonkotsu'
-
-  // ── あっさり + 魚介系 ──────────────────────────────────────────────────────
-  if (texture === 'あっさり' && base === '魚介系') {
-    if (noodle === '太麺') return 'tsukemen-light'
-    return 'tanrei'
-  }
-
-  // ── あっさり + 動物系 ──────────────────────────────────────────────────────
-  if (texture === 'あっさり' && base === '動物系') return 'tori-shio'
-
-  // ── あっさり + ダブルスープ ───────────────────────────────────────────────
-  if (texture === 'あっさり' && base === 'ダブルスープ') {
-    if (noodle === '太麺') return 'tsukemen-light'
-    if (noodle === '中太麺') return 'tanrei'
-    return 'tsukemen-light'
-  }
-
-  // ── すっきり + 魚介系 ──────────────────────────────────────────────────────
-  if (texture === 'すっきり' && base === '魚介系') {
-    if (noodle === '細麺') return 'niboshi'
-    return 'shio-ago'
-  }
-
-  // ── すっきり + 動物系 ──────────────────────────────────────────────────────
-  if (texture === 'すっきり' && base === '動物系') {
-    if (noodle === '細麺') return 'tori-shio'
-    return 'shoyu'
-  }
-
-  // ── すっきり + ダブルスープ ───────────────────────────────────────────────
-  if (texture === 'すっきり' && base === 'ダブルスープ') {
-    if (noodle === '細麺') return 'shio-ago'
-    if (noodle === '中太麺') return 'shoyu'
-    return 'tsukemen-light'
-  }
-
-  return 'creative'
+/** 回答から苦手リストを取得 */
+export function getDislikes(answers: Answers): string[] {
+  const raw = answers['dislikes']
+  if (!raw) return []
+  const items = Array.isArray(raw) ? raw : [raw]
+  return items.filter((v) => v !== '特になし')
 }
 
 /**
- * 汁気の有無（soup）に応じてジャンルを調整する。
- * 汁あり → 汁なし・つけ麺系を有汁ジャンルへ振り替え
- * 汁なし → 有汁ジャンルをまぜそば・汁なし系へ振り替え
+ * 全ジャンルをスコアリングして順位付きで返す。
+ * 苦手項目のペナルティも含む。
  */
-function applySoupPreference(id: string, answers: Answers, dislikes: string[]): string {
-  const soup = answers['soup'] as string
-  if (!soup || soup === 'こだわらない') return id
+function calcScores(answers: Answers, dislikes: string[]): { id: string; score: number }[] {
+  return Object.keys(scoreProfiles).map((id) => {
+    const p = scoreProfiles[id]
+    let score = 0
 
-  if (soup === '汁あり') {
-    // 汁なし系（油そば・まぜそば）を除外
-    if (NOODLE_ONLY.has(id)) {
-      const texture = answers['texture'] as string
-      // こってり系の文脈 → 濃厚魚介豚骨、それ以外 → 淡麗系
-      return texture === 'こってり' ? 'fish-tonkotsu' : 'tanrei'
+    // 各軸のスコアを加算
+    score += p.texture[answers['texture'] as string]  ?? 0
+    score += p.base[answers['base'] as string]        ?? 0
+    score += p.noodle[answers['noodle'] as string]    ?? 0
+    score += p.richness[answers['richness'] as string] ?? 0
+    score += p.soup[answers['soup'] as string]        ?? 0
+
+    // 苦手ペナルティ
+    for (const item of dislikes) {
+      score += p.dislikes[item] ?? 0
     }
-    // つけ麺系を除外
-    if (id === 'tsukemen') return 'fish-tonkotsu'
-    if (id === 'tsukemen-light') return 'tanrei'
-  }
 
-  if (soup === '汁なし') {
-    // 既に汁なし・つけ麺系なら変更なし
-    if (NOODLE_ONLY.has(id) || TSUKEMEN.has(id)) return id
-    // 有汁ジャンル → 太麺なら台湾まぜそば、それ以外は油そば
-    // （辛いもの苦手の場合は後段の applyDislikeOverrides が台湾→油そばへ振り替える）
-    const noodle = answers['noodle'] as string
-    const isSpicy = dislikes.includes('辛いもの')
-    if (noodle === '太麺' && !isSpicy) return 'taiwan-maze'
-    return 'abura-soba'
-  }
-
-  return id
-}
-
-/** ジャンルIDを苦手選択に応じてリダイレクト */
-function applyDislikeOverrides(id: string, dislikes: string[]): string {
-  const isSpicy = dislikes.includes('辛いもの')
-  const isAnimalSmell = dislikes.includes('獣臭')
-  const isBackFat = dislikes.includes('背脂')
-  const isNiboshi = dislikes.includes('煮干し')
-
-  // 煮干し苦手 → 煮干し系を淡麗系へ（同じあっさり魚介圏で煮干し不使用）
-  if (isNiboshi && id === 'niboshi') id = 'tanrei'
-
-  if (isSpicy) {
-    if (id === 'tantanmen') id = 'tsukemen'
-    if (id === 'taiwan-maze') id = 'abura-soba'
-  }
-
-  if (isAnimalSmell) {
-    if (id === 'hakata') id = 'tori-paitan'
-    if (id === 'ie-jiro') id = 'miso'
-    if (id === 'tonkotsu-shoyu') id = 'tori-paitan'
-    if (id === 'fish-tonkotsu') id = 'tanrei'
-  }
-
-  if (isBackFat) {
-    if (id === 'ie-jiro') id = 'fish-tonkotsu'
-    if (id === 'tonkotsu-shoyu') id = 'tori-paitan'
-  }
-
-  // 二次チェック：背脂override後の fish-tonkotsu に獣臭嫌いが重なる場合
-  if (isAnimalSmell && id === 'fish-tonkotsu') id = 'tanrei'
-
-  return id
+    return { id, score }
+  }).sort((a, b) => b.score - a.score)
 }
 
 /** リダイレクト発生時の説明文を生成 */
 function buildRedirectNote(
-  original: string,
-  afterSoup: string,
-  final: string,
+  originalId: string,
+  finalId: string,
   answers: Answers,
   dislikes: string[]
 ): string | null {
-  if (original === final) return null
+  if (originalId === finalId) return null
 
   const name = (id: string) => genres[id]?.name ?? id
   const soup = answers['soup'] as string
 
-  // ① 汁なし希望で台湾まぜそばになったが、辛いもの苦手で油そばに変更
-  if (soup === '汁なし' && afterSoup === 'taiwan-maze' && final === 'abura-soba') {
-    return `汁なしご希望＋辛いものが苦手とのことで、「油そば」をご提案します。醤油・塩ベースのまぜそば系のお店もあわせてお探しください。`
+  if (soup === '汁なし' && (originalId === 'tantanmen' || dislikes.includes('辛いもの'))) {
+    return `汁なしご希望＋辛いものが苦手とのことで、「${name(finalId)}」をご提案します。`
   }
-
-  // ② 汁なし希望によるリダイレクト
-  if (soup === '汁なし' && original !== afterSoup) {
-    return `汁なしご希望のため、「${name(final)}」をご提案します。`
+  if (soup === '汁なし') {
+    return `汁なしご希望のため、「${name(finalId)}」をご提案します。`
   }
-
-  // ③ 汁あり希望で汁なし・つけ麺系を回避
-  if (soup === '汁あり' && (NOODLE_ONLY.has(original) || TSUKEMEN.has(original))) {
-    return `汁ありご希望のため、${name(original)}の代わりに「${name(final)}」をご提案します。`
+  if (soup === '汁あり') {
+    return `汁ありご希望のため、${name(originalId)}の代わりに「${name(finalId)}」をご提案します。`
   }
-
-  // ④ 煮干し苦手によるリダイレクト
-  if (dislikes.includes('煮干し') && original === 'niboshi') {
-    return `煮干しが苦手とのことで、煮干し系の代わりに「${name(final)}」をご提案します。`
+  if (dislikes.includes('煮干し') && originalId === 'niboshi') {
+    return `煮干しが苦手とのことで、「${name(finalId)}」をご提案します。`
   }
-
-  // ⑤ 辛いもの嫌いによるリダイレクト（soup関係なし）
-  if (dislikes.includes('辛いもの')) {
-    if (original === 'taiwan-maze' || afterSoup === 'taiwan-maze')
-      return `辛いものが苦手とのことで、台湾まぜそばの代わりに「${name(final)}」をご提案します。醤油・塩ベースのまぜそばもあわせてお探しください。`
-    if (original === 'tantanmen' || afterSoup === 'tantanmen')
-      return `辛いものが苦手とのことで、担々麺の代わりに「${name(final)}」をご提案します。`
+  if (dislikes.includes('辛いもの') && originalId === 'tantanmen') {
+    return `辛いものが苦手とのことで、担々麺の代わりに「${name(finalId)}」をご提案します。`
   }
-
-  // ⑥ 獣臭・背脂によるリダイレクト
+  if (dislikes.includes('辛いもの') && originalId === 'taiwan-maze') {
+    return `辛いものが苦手とのことで、台湾まぜそばの代わりに「${name(finalId)}」をご提案します。`
+  }
   if (dislikes.includes('獣臭')) {
-    const odorSources = ['hakata', 'ie-jiro', 'tonkotsu-shoyu', 'fish-tonkotsu']
-    if (odorSources.includes(original))
-      return `豚骨の匂いが苦手とのことで、${name(original)}を避けて「${name(final)}」をご提案します。匂いが少なくまろやかな一杯です。`
+    return `豚骨の匂いが苦手とのことで、${name(originalId)}を避けて「${name(finalId)}」をご提案します。`
   }
   if (dislikes.includes('背脂')) {
-    if (original === 'ie-jiro' || original === 'tonkotsu-shoyu')
-      return `背脂が苦手とのことで、${name(original)}を避けて「${name(final)}」をご提案します。同じ満足感でよりすっきりいただけます。`
+    return `背脂が苦手とのことで、${name(originalId)}を避けて「${name(finalId)}」をご提案します。`
   }
 
   return null
 }
 
 export function diagnose(answers: Answers): DiagnoseResult {
-  const baseId = resolveGenreId(answers)
   const dislikes = getDislikes(answers)
+  const ranked = calcScores(answers, dislikes)
 
-  // 汁気の有無 → 苦手項目 の順に適用
-  const afterSoupId = applySoupPreference(baseId, answers, dislikes)
-  const finalId = applyDislikeOverrides(afterSoupId, dislikes)
+  // 1位（苦手ペナルティ込みの最高スコア）
+  const topId = ranked[0].id
+  const genre = genres[topId] as Genre
 
-  return {
-    genre: genres[finalId] as Genre,
-    redirectNote: buildRedirectNote(baseId, afterSoupId, finalId, answers, dislikes),
-  }
-}
+  // 2位（1位と異なるジャンル）
+  const secondId = ranked[1].id
+  const secondGenre = genres[secondId] as Genre
 
-/** Returns disliked items from the final 'dislikes' question, excluding '特になし' */
-export function getDislikes(answers: Answers): string[] {
-  const raw = answers['dislikes']
-  if (!raw) return []
-  const items = Array.isArray(raw) ? raw : [raw]
-  return items.filter((v) => v !== '特になし')
+  // 正反対（最下位スコア）
+  const oppositeId = ranked[ranked.length - 1].id
+  const oppositeGenre = genres[oppositeId] as Genre
+
+  // リダイレクトノート（スコアリングでは1位が自然に変わるので稀だが一応対応）
+  const redirectNote = buildRedirectNote(ranked[0].id, topId, answers, dislikes)
+
+  return { genre, secondGenre, oppositeGenre, redirectNote }
 }

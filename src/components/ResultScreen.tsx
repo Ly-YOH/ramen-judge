@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Genre } from '../types'
-import { genres } from '../data/genres'
-import { alternatives } from '../data/alternatives'
 import { AdmaxAd } from './AdmaxAd'
 import Footer from './Footer'
 
 interface Props {
   genre: Genre
+  secondGenre: Genre
+  oppositeGenre: Genre
   dislikes: string[]
   redirectNote: string | null
   onRestart: () => void
@@ -22,19 +22,14 @@ const VIEW_LABEL: Record<View, string> = {
   secondary: '2位の結果',
 }
 
-export default function ResultScreen({ genre: primaryGenre, dislikes, redirectNote, onRestart }: Props) {
+export default function ResultScreen({ genre: primaryGenre, secondGenre, oppositeGenre, dislikes, redirectNote, onRestart }: Props) {
   const [view, setView] = useState<View>('primary')
   useEffect(() => { window.scrollTo(0, 0) }, [])
   useEffect(() => { window.scrollTo(0, 0) }, [view])
 
-  // 表示するジャンルを view に応じて切り替え
-  const alt = alternatives[primaryGenre.id]
-  const oppositeGenre  = alt ? genres[alt.opposite]  ?? primaryGenre : primaryGenre
-  const secondaryGenre = alt ? genres[alt.secondary] ?? primaryGenre : primaryGenre
-
   const genre =
     view === 'opposite'  ? oppositeGenre  :
-    view === 'secondary' ? secondaryGenre :
+    view === 'secondary' ? secondGenre    :
     primaryGenre
 
   // Googleマップ検索クエリ
@@ -185,27 +180,25 @@ export default function ResultScreen({ genre: primaryGenre, dislikes, redirectNo
         </div>
 
         {/* Alternative view buttons */}
-        {alt && (
-          <div className="flex flex-col gap-2 mb-4">
-            <p className="text-center text-xs text-stone-400">他の結果を見る</p>
-            {view !== 'opposite' && (
-              <button
-                onClick={() => setView('opposite')}
-                className="w-full py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
-              >
-                🔄 正反対の結果を見る（{oppositeGenre.name}）
-              </button>
-            )}
-            {view !== 'secondary' && (
-              <button
-                onClick={() => setView('secondary')}
-                className="w-full py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
-              >
-                🥈 2位の結果を見る（{secondaryGenre.name}）
-              </button>
-            )}
-          </div>
-        )}
+        <div className="flex flex-col gap-2 mb-4">
+          <p className="text-center text-xs text-stone-400">他の結果を見る</p>
+          {view !== 'opposite' && (
+            <button
+              onClick={() => setView('opposite')}
+              className="w-full py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
+            >
+              🔄 正反対の結果を見る（{oppositeGenre.name}）
+            </button>
+          )}
+          {view !== 'secondary' && (
+            <button
+              onClick={() => setView('secondary')}
+              className="w-full py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
+            >
+              🥈 2位の結果を見る（{secondGenre.name}）
+            </button>
+          )}
+        </div>
 
         {/* Restart button */}
         <button onClick={onRestart} className="btn-secondary">
