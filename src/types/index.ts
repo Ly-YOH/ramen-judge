@@ -29,6 +29,8 @@ export interface Genre {
   name: string
   description: string
   mapKeyword: string
+  /** Googleマップ検索の最適化クエリ（未指定時はmapKeywordから自動生成） */
+  mapsQuery?: string
   /** ~30 chars: 味の特徴＋おすすめ味変 */
   flavorNote: string
   /** Optional extra context shown below description */
