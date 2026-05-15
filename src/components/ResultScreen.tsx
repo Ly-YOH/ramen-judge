@@ -180,22 +180,21 @@ export default function ResultScreen({ genre: primaryGenre, secondGenre, opposit
         </div>
 
         {/* Alternative view buttons */}
-        <div className="flex flex-col gap-2 mb-4">
-          <p className="text-center text-xs text-stone-400">他の結果を見る</p>
+        <div className="flex flex-row gap-2 mb-4">
           {view !== 'opposite' && (
             <button
               onClick={() => setView('opposite')}
-              className="w-full py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
+              className="flex-1 py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
             >
-              🔄 正反対の結果を見る（{oppositeGenre.name}）
+              🔄 正反対の結果
             </button>
           )}
           {view !== 'secondary' && (
             <button
               onClick={() => setView('secondary')}
-              className="w-full py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
+              className="flex-1 py-3 px-4 rounded-2xl font-bold text-sm text-stone-600 bg-stone-100 border border-stone-200 active:scale-95 transition-transform duration-100"
             >
-              🥈 2位の結果を見る（{secondGenre.name}）
+              🥈 2位の結果
             </button>
           )}
         </div>

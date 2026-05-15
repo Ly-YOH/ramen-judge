@@ -49,11 +49,11 @@ export default function StartScreen({ onStart }: Props) {
           </button>
           <p className="text-stone-400 text-xs mt-2">所要時間：約30秒 ・ 全8問</p>
         </div>
-      </div>
 
-      {/* 広告 */}
-      <div className="mt-10">
-        <AdmaxAd />
+        {/* 広告 */}
+        <div className="mt-6 w-full">
+          <AdmaxAd />
+        </div>
       </div>
 
       {/* フッター */}
