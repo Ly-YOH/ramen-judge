@@ -47,7 +47,7 @@ export default function StartScreen({ onStart }: Props) {
           <button onClick={onStart} className="btn-primary text-xl py-4">
             診断スタート 🍥
           </button>
-          <p className="text-stone-400 text-xs mt-2">所要時間：約30秒 ・ 全8問</p>
+          <p className="text-stone-400 text-xs mt-2">所要時間：約1分 ・ 全10問</p>
         </div>
 
         {/* 広告 */}
