@@ -20,11 +20,14 @@ function calcScores(answers: Answers, dislikes: string[]): { id: string; score: 
     let score = 0
 
     // 各軸のスコアを加算
-    score += p.texture[answers['texture'] as string]  ?? 0
-    score += p.base[answers['base'] as string]        ?? 0
-    score += p.noodle[answers['noodle'] as string]    ?? 0
-    score += p.richness[answers['richness'] as string] ?? 0
-    score += p.soup[answers['soup'] as string]        ?? 0
+    score += p.texture[answers['texture'] as string]         ?? 0
+    score += p.base[answers['base'] as string]               ?? 0
+    score += p.noodle[answers['noodle'] as string]           ?? 0
+    score += p.noodle_type[answers['noodle_type'] as string] ?? 0
+    score += p.richness[answers['richness'] as string]       ?? 0
+    score += p.soup[answers['soup'] as string]               ?? 0
+    score += p.chashu_pref[answers['chashu'] as string]      ?? 0
+    score += p.spice[answers['spice'] as string]             ?? 0
 
     // 苦手ペナルティ
     for (const item of dislikes) {
@@ -47,9 +50,6 @@ function buildRedirectNote(
   const name = (id: string) => genres[id]?.name ?? id
   const soup = answers['soup'] as string
 
-  if (soup === '汁なし' && (originalId === 'tantanmen' || dislikes.includes('辛いもの'))) {
-    return `汁なしご希望＋辛いものが苦手とのことで、「${name(finalId)}」をご提案します。`
-  }
   if (soup === '汁なし') {
     return `汁なしご希望のため、「${name(finalId)}」をご提案します。`
   }
@@ -58,12 +58,6 @@ function buildRedirectNote(
   }
   if (dislikes.includes('煮干し') && originalId === 'niboshi') {
     return `煮干しが苦手とのことで、「${name(finalId)}」をご提案します。`
-  }
-  if (dislikes.includes('辛いもの') && originalId === 'tantanmen') {
-    return `辛いものが苦手とのことで、担々麺の代わりに「${name(finalId)}」をご提案します。`
-  }
-  if (dislikes.includes('辛いもの') && originalId === 'taiwan-maze') {
-    return `辛いものが苦手とのことで、台湾まぜそばの代わりに「${name(finalId)}」をご提案します。`
   }
   if (dislikes.includes('獣臭')) {
     return `豚骨の匂いが苦手とのことで、${name(originalId)}を避けて「${name(finalId)}」をご提案します。`
