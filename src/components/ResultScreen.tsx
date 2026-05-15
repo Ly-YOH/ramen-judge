@@ -203,11 +203,11 @@ export default function ResultScreen({ genre: primaryGenre, secondGenre, opposit
         <button onClick={onRestart} className="btn-secondary">
           もう一度診断する
         </button>
-      </div>
 
-      {/* 広告 */}
-      <div className="mt-10">
-        <AdmaxAd />
+        {/* 広告 */}
+        <div className="mt-6 w-full">
+          <AdmaxAd />
+        </div>
       </div>
 
       {/* フッター */}
