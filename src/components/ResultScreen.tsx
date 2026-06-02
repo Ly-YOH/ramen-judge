@@ -40,7 +40,7 @@ export default function ResultScreen({ genre: primaryGenre, secondGenre, opposit
   const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(mapsQuery)}/`
 
   // SNSシェア
-  const shareText = `今の気分にぴったりの一杯は【${genre.name}】でした！ #今日の一杯 #ラーメン診断`
+  const shareText = `今食いたい一杯は【${genre.name}】でした！ #今食いたい一杯 #ラーメン診断`
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(APP_URL)}`
   const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(APP_URL)}&text=${encodeURIComponent(shareText)}`
 

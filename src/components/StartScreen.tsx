@@ -19,7 +19,7 @@ export default function StartScreen({ onStart }: Props) {
 
         {/* Title */}
         <h1 className="text-4xl font-black text-ramen-dark mb-1 tracking-tight leading-tight">
-          今日の一杯
+          今食いたい一杯
         </h1>
         <p className="text-ramen-orange font-bold text-base mb-3 tracking-wide">
           ラーメン診断
