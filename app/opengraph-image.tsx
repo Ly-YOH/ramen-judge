@@ -6,9 +6,8 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image() {
-  // Noto Sans JP Bold（日本語サブセット）を Google Fonts から取得
   const css = await fetch(
-    'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap',
+    'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@900&display=swap',
     {
       headers: {
         'User-Agent':
@@ -32,51 +31,51 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '60px',
         }}
       >
-        <div style={{ fontSize: 100, marginBottom: '20px', lineHeight: 1 }}>🍜</div>
+        {/* 今食いたい */}
         <div
           style={{
-            fontSize: 80,
-            fontWeight: 700,
+            fontSize: 112,
+            fontWeight: 900,
             color: '#2C1A0E',
             fontFamily: 'Noto Sans JP',
-            marginBottom: '16px',
             letterSpacing: '-2px',
-            lineHeight: 1.2,
+            lineHeight: 1,
+            marginBottom: '4px',
           }}
         >
-          今食いたい一杯
+          今食いたい
         </div>
+
+        {/* ラーメンイラスト */}
+        <img
+          src="https://ramen-judge.vercel.app/images/ramen-start.png"
+          width={290}
+          height={290}
+          style={{ objectFit: 'contain' }}
+        />
+
+        {/* 一杯（イラスト下部に重ねる） */}
         <div
           style={{
-            fontSize: 44,
-            fontWeight: 700,
+            fontSize: 136,
+            fontWeight: 900,
             color: '#E67E22',
             fontFamily: 'Noto Sans JP',
-            marginBottom: '48px',
+            letterSpacing: '-3px',
+            lineHeight: 1,
+            marginTop: '-52px',
           }}
         >
-          ラーメン診断
-        </div>
-        <div
-          style={{
-            fontSize: 28,
-            color: '#7D4E2A',
-            fontFamily: 'Noto Sans JP',
-            textAlign: 'center',
-            lineHeight: 1.6,
-          }}
-        >
-          今の気分を言語化。あなたにぴったりのラーメンジャンルをサクッと診断！
+          一杯
         </div>
       </div>
     ),
     {
       ...size,
       fonts: fontData
-        ? [{ name: 'Noto Sans JP', data: fontData, style: 'normal', weight: 700 }]
+        ? [{ name: 'Noto Sans JP', data: fontData, style: 'normal', weight: 900 }]
         : [],
     }
   )
