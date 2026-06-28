@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: '今食いたい一杯 | ラーメン診断',
     description: '今の気分を言語化。あなたにぴったりのラーメンジャンルをサクッと診断！',
-    images: ['/images/ramen-start.png'],
+    images: [{ url: '/images/ramen-start.png', width: 700, height: 700, alt: '今食いたい一杯 ラーメン診断' }],
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    images: ['/images/ramen-start.png'],
+    images: [{ url: '/images/ramen-start.png', width: 700, height: 700, alt: '今食いたい一杯 ラーメン診断' }],
   },
 }
 
